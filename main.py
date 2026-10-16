@@ -31,29 +31,37 @@ all_data = torch.tensor(encode(text), dtype=torch.long) #Turn text -> ints -> te
 n = int(0.9*len(all_data))
 train_data = all_data[:n]
 val_data = all_data[n:]
+
 '''
 Use the first 90% of the data to train the AI on 
 what the response should look like, then compare its output with 
 the actual last 10% of the data to see how they compare
 '''
 
-
-'''
-train_data[:block_size+1]  
-allows for 8 predictions: "1 leads to 5; 1 and 5 leads to 37; 1, 5, and 37 leads to 12" a total of 8 times
-Useful for training AI to being used to making predictions with little or a lot of context
-'''
-
-
 def get_batch(split):
     data = train_data if split == 'train' else val_data 
     ix = torch.randint(len(data) - block_size, (batch_size,)) #Create tensor, 1 row of size batch, with ints [0, length of data - block_size], to find random positions
     x = torch.stack([data[i:i+block_size] for i in ix]) 
     y = torch.stack([data[i+1:i+block_size+1] for i in ix])
+    x, y = x.to(device), y.to(device)
     return x, y
 '''
-x is a tensor 4x8, holds 4 chunks of 8 values
+x is a tensor 64x256, holds 64 chunks of 256 values
 y holds the same, shifted left 1
 numbers are random so AI doesn't focus on specific words rather than patterns
 '''
+
+@torch.no_grad() #no graphing
+def estimate_loss():
+    out = {}
+    model.eval() #no dropoff
+    for split in ['train', 'val']:
+        losses = torch.zeros(eval_iters)
+        for k in range(eval_iters):
+            X, Y = get_batch(split)
+            logits, loss = model(X, Y)
+            losses[k] = loss.item()
+        out[split] = losses.mean()
+    model.train()
+    return out
 
