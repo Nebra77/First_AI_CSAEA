@@ -2,17 +2,17 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-block_size = 256 #size of sampled chunk
-batch_size = 64 # How many chunks to process at once
-max_iterations = 6000 
-eval_interval = 500
-learning_rate = 3e-4 #how much to adjust weights
-device = 'cuda' if torch.cuda.is_available() else 'cpu' #use GPU, else CPU
-eval_iters = 200 #find average of 200 batch losses to find loss
-n_embd = 384 #numbers per vector
-n_head = 6 #attention heads per block
-n_layer = 6 #stacked transformer blocks
-dropout = 0.2 
+batch_size = 12 # how many independent sequences will we process in parallel?
+block_size = 64 # what is the maximum context length for predictions?
+max_iters = 2000
+eval_interval = 100
+learning_rate = 3e-4
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+eval_iters = 20
+n_embd = 128
+n_head = 4
+n_layer = 4
+dropout = 0.1
 
 with open('input.txt','r', encoding='utf-8') as f:
     text = f.read() 
