@@ -1,0 +1,58 @@
+
+Index · HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tiny Shakespeare GPT</title>
+  <style>
+    body {
+      font-family: Georgia, serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.5;
+    }
+    button {
+      font-size: 1rem;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    #output {
+      white-space: pre-wrap;
+      font-family: "Courier New", monospace;
+      border: 1px solid #888;
+      border-radius: 6px;
+      padding: 16px;
+      margin-top: 20px;
+      min-height: 200px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tiny Shakespeare GPT</h1>
+  <p>AI that writes like Shakespeare one character at a time.</p>
+ 
+  <button id="btn" onclick="generate()">Generate new text</button>
+  <div id="output">Press the button to generate.</div>
+ 
+  <script>
+    async function generate() {
+      const btn = document.getElementById('btn');
+      const out = document.getElementById('output');
+      btn.disabled = true;
+      out.textContent = 'Writing...';
+      try {
+        const res = await fetch('/generate');
+        const data = await res.json();
+        out.textContent = data.text;
+      } catch (err) {
+        out.textContent = 'Something went wrong. Is the server running?';
+      }
+      btn.disabled = false;
+    }
+  </script>
+</body>
+</html>
+ 
